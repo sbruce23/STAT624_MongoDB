@@ -10,5 +10,5 @@ FROM mongo:5.0
 
  COPY primer-dataset.json /primer-dataset.json
 
- CMD mongoimport --username ${USERNAME} --password ${PASSWORD} --uri ${DATABASE_URI} --collection admin --drop --file /primer-dataset.json
+ CMD mongoimport --username ${USERNAME} --password ${PASSWORD} --uri ${DATABASE_URI} --collection restaurants --drop --file /primer-dataset.json
 

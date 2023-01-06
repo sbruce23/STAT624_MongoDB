@@ -4,26 +4,16 @@ services:
     mongo:
         container_name: mongodb
         image: mongo:5.0
+        restart: always
         env_file:
             - .env
         ports: 
             - "27017:27017"
-    mongo-express:
-        image: mongo-express:1.0.0-alpha
-        environment: 
-          - ME_CONFIG_MONGODB_SERVER=mongo
-          - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-          - ME_CONFIG_MONGODB_ADMINPASSWORD=example
-          - ME_CONFIG_BASICAUTH_USERNAME=root
-          - ME_CONFIG_BASICAUTH_PASSWORD=example
-        depends_on:
-            - mongo
-        ports:
-          - "8081:8081"
    # Initial Seed to Restaurants Database
     mongo-seed:
         env_file:
             - .env
+        restart: always
         build:
             context: ./mongo_seed
             dockerfile: Dockerfile
@@ -33,5 +23,19 @@ services:
                 - PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
         depends_on:
             - mongo
-
-
+    mongo-express:
+        image: mongo-express:1.0.0-alpha
+        restart: always
+        env_file:
+            - .env
+        environment: 
+            - ME_CONFIG_MONGODB_SERVER=mongodb
+            - ME_CONFIG_MONGODB_ADMINUSERNAME=$MONGO_INITDB_ROOT_USERNAME
+            - ME_CONFIG_MONGODB_ADMINPASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+            - ME_CONFIG_BASICAUTH_USERNAME=$MONGOEXPRESS_LOGIN
+            - ME_CONFIG_BASICAUTH_PASSWORD=$MONGOEXPRESS_PASSWORD
+        depends_on:
+            - mongo-seed
+            - mongo
+        ports:
+          - "8081:8081"
